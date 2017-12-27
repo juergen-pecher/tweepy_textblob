@@ -1,1 +1,1 @@
-# tweety_textblob
+# tweepy_textblob
