@@ -9,7 +9,9 @@ from elasticsearch import Elasticsearch
 from config import *
 
 # create instance of elasticsearch
-es = Elasticsearch()
+es = Elasticsearch(
+    hosts=[{'host': elastic_host, 'port': elastic_port}]
+)
 
 
 class TweetStreamListener(StreamListener):
