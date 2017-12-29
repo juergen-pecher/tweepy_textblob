@@ -9,8 +9,11 @@ MAINTAINER Juergen Pecher <juergen.pecher@mydropteam.com>
 
 WORKDIR /usr/src/app
 
-RUN pip install tweepy
-
-RUN pip install textblob
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
 
 RUN python -m textblob.download_corpora
+
+COPY config.py ./config.py
+COPY sentiment.py ./sentiment.py
+CMD [ "python", "./sentiment.py" ]

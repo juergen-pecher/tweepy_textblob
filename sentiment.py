@@ -40,19 +40,35 @@ class TweetStreamListener(StreamListener):
         print sentiment
 
         # add text and sentiment info to elasticsearch
-        es.index(index="sentiment",
+        es.index(index="ektdemo",
                  doc_type="test-type",
                  body={"author": dict_data["user"]["screen_name"],
                        "date": dict_data["created_at"],
                        "message": dict_data["text"],
+                       "tweet_id": dict_data["id_str"],
+                       "tweet_timestamp_ms": dict_data["timestamp_ms"],
+                       "tweet_date": dict_data["created_at"],
+                       "is_quote_status": dict_data["is_quote_status"],
+                       "in_reply_to_status_id": dict_data["in_reply_to_status_id"],
+                       "in_reply_to_screen_name": dict_data["in_reply_to_screen_name"],
+                       "favorite_count": dict_data["favorite_count"],
+                       "author": dict_data["user"]["screen_name"],
+                       "tweet_text": dict_data["text"],
+                       "retweeted": dict_data["retweeted"],
+                       "retweet_count": dict_data["retweet_count"],
+                       "geo": dict_data["geo"],
+                       "place": dict_data["place"],
+                       "coordinates": dict_data["coordinates"],
                        "polarity": tweet.sentiment.polarity,
                        "subjectivity": tweet.sentiment.subjectivity,
                        "sentiment": sentiment})
         return True
 
     # on failure
-    def on_error(self, status):
-        print status
+    def on_error(self, status_code):
+        if status_code == 420:
+            #returning False in on_data disconnects the stream
+            return False
 
 if __name__ == '__main__':
 
@@ -66,5 +82,8 @@ if __name__ == '__main__':
     # create instance of the tweepy stream
     stream = Stream(auth, listener)
 
-    # search twitter for "congress" keyword
-    stream.filter(track=['congress'])
+    # search twitter for keywords
+    stream.filter(
+        track=filter_words,
+        languages=filter_languages
+        )
